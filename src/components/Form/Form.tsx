@@ -38,10 +38,12 @@ const Form: FC<IFormProps> = ({ values, schema, onSubmit }) => {
   return (
     <form onSubmit={submitForm} css={styles.form}>
       {Object.entries(values).map(([key, item]) => (
-        <div css={styles.input}>
+        <div css={styles.input(!!errors[key])}>
           <label htmlFor={key}>{item.label}</label>
-          <input key={key} type={item.type} {...register(key)} />
-          {errors[key] && <span>{errors[key].message}</span>}
+          <div>
+            <input key={key} type={item.type} {...register(key)} />
+            {errors[key] && <span>{errors[key].message}</span>}
+          </div>
         </div>
       ))}
 
