@@ -1,20 +1,25 @@
+/** @jsxImportSource @emotion/react */
+
+import { SubmitHandler } from "react-hook-form";
 import Form from "./components/Form";
+import * as styles from "./styles";
+import { IFormProps } from "./components/Form/Form";
 
 function App() {
   const values = {
-    firstName: { type: "text", error: "First name is required" },
-    lastName: { type: "text", default: "Dias", error: "Last name is required" },
-    age: { type: "number", error: "Age is required" },
-    email: { type: "email", error: "Email is required" },
-    password: { type: "password", error: "Password is required" },
+    firstName: { type: "text", label: "First Name:" },
+    lastName: { type: "text", label: "Last Name:", default: "Dias" },
+    age: { type: "number", label: "Age:" },
+    email: { type: "email", label: "Email:" },
+    password: { type: "password", label: "Password:" },
   };
 
-  const onSubmit = (data: Record<string, string>) => {
+  const onSubmit: SubmitHandler<IFormProps["values"]> = (data) => {
     console.log(data);
   };
 
   return (
-    <div>
+    <div css={styles.container}>
       <Form values={values} onSubmit={onSubmit} />
     </div>
   );
