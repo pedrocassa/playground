@@ -3,6 +3,8 @@
 import { FC } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as styles from "./styles";
+import { ZodSchema } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface FormValue {
   type: string;
@@ -12,17 +14,23 @@ interface FormValue {
 
 export interface IFormProps {
   values: Record<string, FormValue>;
+  schema: ZodSchema;
   onSubmit: SubmitHandler<IFormProps["values"]>;
 }
 
-const Form: FC<IFormProps> = ({ values, onSubmit }) => {
+const Form: FC<IFormProps> = ({ values, schema, onSubmit }) => {
   const defaultValues = Object.entries(values).reduce(
     (acc, [key, item]) => ({ ...acc, [key]: item.default ?? "" }),
     {}
   );
 
-  const { register, handleSubmit } = useForm<IFormProps["values"]>({
+  const {
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = useForm<IFormProps["values"]>({
     defaultValues,
+    resolver: zodResolver(schema),
   });
 
   const submitForm = handleSubmit(onSubmit);
@@ -33,6 +41,7 @@ const Form: FC<IFormProps> = ({ values, onSubmit }) => {
         <div css={styles.input}>
           <label htmlFor={key}>{item.label}</label>
           <input key={key} type={item.type} {...register(key)} />
+          {errors[key] && <span>{errors[key].message}</span>}
         </div>
       ))}
 
