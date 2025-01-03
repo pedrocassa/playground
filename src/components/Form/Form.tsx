@@ -7,7 +7,8 @@ import { ZodSchema } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface FormValue {
-  type: string;
+  type?: string;
+  options?: string[];
   label: string;
   default?: number | string; // TODO: Fix this type
 }
@@ -41,7 +42,17 @@ const Form: FC<IFormProps> = ({ values, schema, onSubmit }) => {
         <div css={styles.input(!!errors[key])}>
           <label htmlFor={key}>{item.label}</label>
           <div>
-            <input key={key} type={item.type} {...register(key)} />
+            {item.options && item.options.length > 0 ? (
+              <select {...register(key)}>
+                {item.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input key={key} type={item.type} {...register(key)} />
+            )}
             {errors[key] && <span>{errors[key].message}</span>}
           </div>
         </div>

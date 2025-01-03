@@ -26,6 +26,11 @@ export const input = (hasError?: boolean) => css`
       border: 1px solid ${hasError ? "red" : "black"};
     }
 
+    select {
+      padding: 0.5rem;
+      border: 1px solid ${hasError ? "red" : "black"};
+    }
+
     span {
       color: ${hasError ? "red" : "none"};
     }
