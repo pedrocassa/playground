@@ -1,16 +1,19 @@
 /** @jsxImportSource @emotion/react */
 
-import { FC } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { FC, ReactNode } from "react";
+import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import * as styles from "./styles";
 import { ZodSchema } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Dropdown } from "../subcomponents";
+import CheckboxGroup from "../subcomponents/CheckboxGroup";
 
-interface FormValue {
+export interface FormValue {
   type?: string;
   options?: string[];
+  items?: string[];
   label: string;
-  default?: number | string; // TODO: Fix this type
+  default?: ReactNode;
 }
 
 export interface IFormProps {
@@ -25,41 +28,55 @@ const Form: FC<IFormProps> = ({ values, schema, onSubmit }) => {
     {}
   );
 
-  const {
-    formState: { errors },
-    register,
-    handleSubmit,
-  } = useForm<IFormProps["values"]>({
+  const methods = useForm<IFormProps["values"]>({
     defaultValues,
     resolver: zodResolver(schema),
   });
 
+  const {
+    formState: { errors },
+    register,
+    handleSubmit,
+  } = methods;
+
   const submitForm = handleSubmit(onSubmit);
 
   return (
-    <form onSubmit={submitForm} css={styles.form}>
-      {Object.entries(values).map(([key, item]) => (
-        <div css={styles.input(!!errors[key])}>
-          <label htmlFor={key}>{item.label}</label>
-          <div>
-            {item.options && item.options.length > 0 ? (
-              <select {...register(key)}>
-                {item.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input key={key} type={item.type} {...register(key)} />
-            )}
-            {errors[key] && <span>{errors[key].message}</span>}
+    <FormProvider {...methods}>
+      <form onSubmit={submitForm} css={styles.form}>
+        {Object.entries(values).map(([key, item]) => (
+          <div css={styles.input(!!errors[key])}>
+            <label htmlFor={key}>{item.label}</label>
+            <div>
+              {item.options && item.options.length > 0 ? (
+                <Dropdown
+                  key={`${key}-${item.label}`}
+                  registerKey={key}
+                  options={item.options}
+                />
+              ) : item.type === "checkbox" &&
+                item.items &&
+                item.items.length > 0 ? (
+                <CheckboxGroup
+                  key={`${key}-${item.label}`}
+                  registerKey={key}
+                  items={item.items}
+                />
+              ) : (
+                <input
+                  key={`${key}-${item.label}`}
+                  type={item.type}
+                  {...register(key)}
+                />
+              )}
+              {errors[key] && <span>{errors[key].message}</span>}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
-      <input type="submit" />
-    </form>
+        <input type="submit" />
+      </form>
+    </FormProvider>
   );
 };
 

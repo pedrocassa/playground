@@ -16,7 +16,6 @@ function App() {
       .string()
       .nonempty("Last Name is required")
       .regex(/^[A-Za-z]+$/i, "Only letters are allowed"),
-    gender: z.string().nonempty("Gender is required"),
     birthDate: z
       .string()
       .nonempty("Birth Date is required")
@@ -34,6 +33,7 @@ function App() {
       .refine((val) => !isNaN(val) && val > 0, {
         message: "Age must be a positive number",
       }),
+    hobbies: z.string().nonempty("Hobbies is required"),
     email: z.string().email("Invalid email address"),
     password: z.string().nonempty("Password is required"),
   });
@@ -44,8 +44,13 @@ function App() {
     age: { type: "number", label: "Age:" },
     birthDate: { type: "date", label: "Birth Date:" },
     gender: {
+      type: "checkbox",
       label: "Gender:",
-      options: ["", "Male", "Female"],
+      items: ["Male", "Female"],
+    },
+    hobbies: {
+      label: "Hobbies:",
+      options: ["", "Reading", "Writing", "Coding"],
     },
     email: { type: "email", label: "Email:" },
     password: { type: "password", label: "Password:" },
